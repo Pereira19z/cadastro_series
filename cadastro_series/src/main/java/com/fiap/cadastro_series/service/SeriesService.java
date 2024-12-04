@@ -31,7 +31,10 @@ public class SeriesService {
 
     // Atualizar uma série existente
     public Series atualizarSerie(Long id, Series serie) {
-        // Você pode adicionar lógica para verificar se a série já existe antes de atualizar
+        if (!seriesRepository.existsById(id)) {
+            throw new IllegalArgumentException("Série não encontrada para atualização");
+        }
+        serie.setId(id);  // Garante que o ID da série seja o mesmo ao atualizar
         return seriesRepository.save(serie);
     }
 

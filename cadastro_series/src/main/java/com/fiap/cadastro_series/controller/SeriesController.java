@@ -1,9 +1,8 @@
 package com.fiap.cadastro_series.controller;
 
-import com.fiap.cadastro_series.model.Series;
+import com.fiap.cadastro_series.model.Series;  // Certifique-se de que a importação está correta
 import com.fiap.cadastro_series.service.SeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,59 +16,43 @@ public class SeriesController {
     @Autowired
     private SeriesService seriesService;
 
-    // Listar todas as séries com paginação (se necessário)
+    // Listar todas as séries
     @GetMapping
     public ResponseEntity<List<Series>> listarSeries() {
-        List<Series> seriesList = seriesService.listarSeries();
-        if (seriesList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content se não houver séries
-        }
-        return new ResponseEntity<>(seriesList, HttpStatus.OK); // 200 OK
+        List<Series> series = seriesService.listarSeries();
+        return ResponseEntity.ok(series);
     }
 
-    // Consultar uma série específica por ID
+    // Consultar uma série por ID
     @GetMapping("/{id}")
     public ResponseEntity<Series> consultarPorId(@PathVariable Long id) {
         Optional<Series> serie = seriesService.consultarPorId(id);
         if (serie.isPresent()) {
-            return new ResponseEntity<>(serie.get(), HttpStatus.OK); // 200 OK
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found se não encontrar
+            return ResponseEntity.ok(serie.get());
         }
+        return ResponseEntity.notFound().build();
     }
 
     // Adicionar uma nova série
     @PostMapping
     public ResponseEntity<Series> adicionarSerie(@RequestBody Series serie) {
-        try {
-            Series novaSerie = seriesService.adicionarSerie(serie);
-            return new ResponseEntity<>(novaSerie, HttpStatus.CREATED); // 201 Created
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request em caso de erro
-        }
+        Series novaSerie = seriesService.adicionarSerie(serie);
+        return ResponseEntity.ok(novaSerie);
     }
 
-    // Atualizar os dados de uma série existente
+    // Atualizar uma série existente
     @PutMapping("/{id}")
     public ResponseEntity<Series> atualizarSerie(@PathVariable Long id, @RequestBody Series serie) {
-        Optional<Series> serieExistente = seriesService.consultarPorId(id);
-        if (serieExistente.isPresent()) {
-            seriesService.atualizarSerie(id, serie);
-            return new ResponseEntity<>(serie, HttpStatus.OK); // 200 OK
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found se não encontrar a série
-        }
+        Series serieAtualizada = seriesService.atualizarSerie(id, serie);
+        return ResponseEntity.ok(serieAtualizada);
     }
 
     // Remover uma série
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerSerie(@PathVariable Long id) {
-        Optional<Series> serieExistente = seriesService.consultarPorId(id);
-        if (serieExistente.isPresent()) {
-            seriesService.removerSerie(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content se removido com sucesso
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found se a série não for encontrada
+        if (seriesService.removerSerie(id)) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.notFound().build();
     }
 }

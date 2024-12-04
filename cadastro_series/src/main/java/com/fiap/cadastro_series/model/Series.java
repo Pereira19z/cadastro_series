@@ -4,36 +4,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Series {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Gera IDs automaticamente
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ID gerado automaticamente
     private Long id;
 
-    @NotEmpty(message = "Nome da série é obrigatório")
     private String nome;
-
-    @NotEmpty(message = "Gênero é obrigatório")
     private String genero;
-
-    @NotNull(message = "Ano de lançamento é obrigatório")
-    @Min(value = 1900, message = "Ano de lançamento inválido")
-    private Integer anoLancamento; // Usar Integer para permitir validações
-
-    @NotNull(message = "Quantidade de temporadas é obrigatória")
-    @Min(value = 1, message = "A quantidade de temporadas deve ser positiva")
-    private Integer quantidadeTemporadas; // Usar Integer para permitir validações
-
-    @NotEmpty(message = "Classificação indicativa é obrigatória")
+    private Integer anoLancamento;
+    private Integer quantidadeTemporadas;
     private String classificacao;
 
     // Getters e Setters
-
     public Long getId() {
         return id;
     }
