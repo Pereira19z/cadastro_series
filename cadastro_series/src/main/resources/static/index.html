@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Séries de TV</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link para o CSS (opcional) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Biblioteca jQuery -->
+</head>
+<body>
+    <h1>Cadastro de Séries de TV</h1>
+
+    <div id="formularioCadastro">
+        <h2>Adicionar Nova Série</h2>
+        <form id="formSerie">
+            <label for="nome">Nome da Série:</label>
+            <input type="text" id="nome" name="nome" required><br>
+
+            <label for="genero">Gênero:</label>
+            <input type="text" id="genero" name="genero" required><br>
+
+            <label for="anoLancamento">Ano de Lançamento:</label>
+            <input type="number" id="anoLancamento" name="anoLancamento" required><br>
+
+            <label for="quantidadeTemporadas">Quantidade de Temporadas:</label>
+            <input type="number" id="quantidadeTemporadas" name="quantidadeTemporadas" required><br>
+
+            <label for="classificacao">Classificação Indicativa:</label>
+            <input type="text" id="classificacao" name="classificacao" required><br><br>
+
+            <button type="submit">Cadastrar Série</button>
+        </form>
+    </div>
+
+    <div id="listaSeries">
+        <h2>Lista de Séries Cadastradas</h2>
+        <ul id="seriesList"></ul>
+    </div>
+
+    <script>
+        // Função para adicionar uma série
+        $('#formSerie').on('submit', function(e) {
+            e.preventDefault();
+            const novaSerie = {
+                nome: $('#nome').val(),
+                genero: $('#genero').val(),
+                anoLancamento: $('#anoLancamento').val(),
+                quantidadeTemporadas: $('#quantidadeTemporadas').val(),
+                classificacao: $('#classificacao').val()
+            };
+
+            $.ajax({
+                url: 'http://localhost:8080/series',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(novaSerie),
+                success: function(response) {
+                    alert('Série cadastrada com sucesso!');
+                    carregarSeries(); // Atualiza a lista de séries
+                    $('#formSerie')[0].reset(); // Limpa o formulário
+                },
+                error: function(error) {
+                    console.error('Erro ao cadastrar a série:', error); // Exibe o erro no console para facilitar a depuração
+                    alert('Erro ao cadastrar a série.');
+                }
+            });
+        });
+
+        // Função para carregar as séries cadastradas
+        function carregarSeries() {
+            $.ajax({
+                url: 'http://localhost:8080/series',
+                type: 'GET',
+                success: function(response) {
+                    $('#seriesList').empty();
+                    if (response.length === 0) {
+                        $('#seriesList').append('<li>Nenhuma série cadastrada.</li>'); // Mensagem se não houver séries
+                    } else {
+                        response.forEach(function(serie) {
+                            $('#seriesList').append('<li>' + serie.nome + ' - ' + serie.genero + ' (' + serie.anoLancamento + ')</li>');
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.error('Erro ao carregar a lista de séries:', error); // Exibe o erro no console
+                    alert('Erro ao carregar a lista de séries.');
+                }
+            });
+        }
+
+        // Carregar as séries na inicialização
+        $(document).ready(function() {
+            carregarSeries();
+        });
+    </script>
+
+</body>
+</html>
